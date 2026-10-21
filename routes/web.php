@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BatchController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -17,9 +19,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
-    Route::get('/products', function () {
-        return view('placeholder', ['title' => 'Produk']);
-    })->name('products.index');
+    Route::resource('products', ProductController::class)->only([
+        'index', 'create', 'store', 'edit', 'update', 'destroy',
+    ]);
+
+    Route::resource('products.batches', BatchController::class)->shallow()->only([
+        'store', 'edit', 'update', 'destroy',
+    ]);
 
     Route::get('/flash-sales', function () {
         return view('placeholder', ['title' => 'Flash Sale']);
