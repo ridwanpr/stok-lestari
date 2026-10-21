@@ -12,7 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Behind a tunnel (cloudflared/ngrok) the local server sees HTTP while the
+        // browser uses HTTPS; trusting the proxy headers keeps generated asset URLs
+        // on https:// and avoids mixed-content blocking.
+        if (env('APP_ENV') === 'local') {
+            $middleware->trustProxies(at: '*');
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
