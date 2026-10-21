@@ -25,7 +25,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 Planning Mode
 
 - In Planning mode, output the system architecture and structural outlines only: target file paths, method signatures with PHPDoc/type hints, and concise bullet points for logic flow.
-- Do not include implementation code blocks, method bodies, or class scaffolding in the plan artifact. Limit code blocks strictly to one-line signatures or Mermaid diagrams.
+- Do not include implementation code blocks, method bodies, or class scaffolding in the plan artifact. Limit code blocks strictly to a few line signatures or Mermaid diagrams.
 
 ## Verification Scripts
 
