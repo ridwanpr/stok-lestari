@@ -17,7 +17,7 @@ class DashboardController extends Controller
         $activeFlashSalesCount = FlashSale::query()->active()->count();
 
         $expiringBatches = Batch::query()
-            ->with('product')
+            ->with(['product', 'flashSales' => fn ($q) => $q->active()])
             ->expiringSoon(7)
             ->orderBy('expiry_date', 'asc')
             ->limit(5)

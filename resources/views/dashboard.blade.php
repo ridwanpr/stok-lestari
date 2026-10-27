@@ -69,12 +69,14 @@
                                 <th scope="col" class="px-5 py-3 text-right">Sisa Stok</th>
                                 <th scope="col" class="px-5 py-3">Tanggal Kedaluwarsa</th>
                                 <th scope="col" class="px-5 py-3 text-right">Sisa Waktu</th>
+                                <th scope="col" class="px-5 py-3 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-surface-border-subtle bg-surface-panel text-sm text-ink-primary">
                             @foreach ($expiringBatches as $batch)
                                 @php
                                     $daysLeft = (int) now()->startOfDay()->diffInDays($batch->expiry_date->startOfDay(), false);
+                                    $hasActiveFlashSale = $batch->flashSales->isNotEmpty();
                                 @endphp
                                 <tr class="hover:bg-surface-base/50 transition-colors">
                                     <td class="px-5 py-3.5 font-medium text-ink-primary">
@@ -98,6 +100,20 @@
                                             </span>
                                         @endif
                                     </td>
+                                    <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                                        @if ($hasActiveFlashSale)
+                                            <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
+                                                Flash Sale Aktif
+                                            </span>
+                                        @else
+                                            <a
+                                                href="{{ route('flash-sales.index', ['batch_id' => $batch->id]) }}"
+                                                class="inline-flex items-center rounded-md bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100 border border-brand-200 transition-colors"
+                                            >
+                                                + Flash Sale
+                                            </a>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -109,6 +125,7 @@
                     @foreach ($expiringBatches as $batch)
                         @php
                             $daysLeft = (int) now()->startOfDay()->diffInDays($batch->expiry_date->startOfDay(), false);
+                            $hasActiveFlashSale = $batch->flashSales->isNotEmpty();
                         @endphp
                         <div class="p-4 space-y-2">
                             <div class="flex items-start justify-between gap-2">
@@ -129,6 +146,20 @@
                             <div class="flex items-center justify-between text-xs text-ink-muted">
                                 <span>Stok: <strong class="font-medium text-ink-primary tabular-nums">{{ number_format($batch->stock, 0, ',', '.') }} unit</strong></span>
                                 <span>Kedaluwarsa: <strong class="font-medium text-ink-secondary tabular-nums">{{ $batch->expiry_date->format('d/m/Y') }}</strong></span>
+                            </div>
+                            <div class="pt-1 flex justify-end">
+                                @if ($hasActiveFlashSale)
+                                    <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
+                                        Flash Sale Aktif
+                                    </span>
+                                @else
+                                    <a
+                                        href="{{ route('flash-sales.index', ['batch_id' => $batch->id]) }}"
+                                        class="inline-flex items-center rounded-md bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100 border border-brand-200 transition-colors"
+                                    >
+                                        + Flash Sale
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     @endforeach
