@@ -9,6 +9,12 @@
             </div>
         @endif
 
+        @if (session('error'))
+            <div class="rounded-lg border border-danger-100 bg-danger-50 p-4 text-sm font-medium text-danger-900" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
         {{-- Header --}}
         <div>
             <h1 class="text-xl font-bold tracking-tight text-ink-primary sm:text-2xl">

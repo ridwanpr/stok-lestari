@@ -63,6 +63,10 @@ class FlashSaleRequest extends FormRequest
                 $validator->errors()->add('batch_id', 'Batch yang dipilih harus berstatus aktif dan belum kedaluwarsa.');
             }
 
+            if ($batch->stock <= 0) {
+                $validator->errors()->add('batch_id', 'Batch yang dipilih harus memiliki sisa stok minimal 1 unit.');
+            }
+
             if ($batch->flashSales->isNotEmpty()) {
                 $validator->errors()->add('batch_id', 'Batch yang dipilih sudah memiliki promo flash sale yang sedang aktif.');
             }

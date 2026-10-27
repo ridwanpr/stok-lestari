@@ -24,6 +24,7 @@ class FlashSaleController extends Controller
 
         $availableBatches = Batch::query()
             ->active()
+            ->where('stock', '>', 0)
             ->whereDate('expiry_date', '>=', now()->toDateString())
             ->whereDoesntHave('flashSales', function ($query) {
                 $query->active();
@@ -62,6 +63,35 @@ class FlashSaleController extends Controller
     public function toggle(FlashSale $flashSale): RedirectResponse
     {
         $newStatus = ! $flashSale->is_active;
+
+        if ($newStatus) {
+            $batch = $flashSale->batch;
+
+            if (! $batch || $batch->status !== 'active' || $batch->expiry_date->isPast() && ! $batch->expiry_date->isToday()) {
+                return redirect()
+                    ->route('flash-sales.index')
+                    ->with('error', 'Flash sale tidak dapat diaktifkan karena batch sudah kedaluwarsa atau tidak aktif.');
+            }
+
+            if ($batch->stock <= 0) {
+                return redirect()
+                    ->route('flash-sales.index')
+                    ->with('error', 'Flash sale tidak dapat diaktifkan karena stok batch sudah habis.');
+            }
+
+            $hasOtherActive = FlashSale::query()
+                ->where('batch_id', $flashSale->batch_id)
+                ->where('id', '!=', $flashSale->id)
+                ->active()
+                ->exists();
+
+            if ($hasOtherActive) {
+                return redirect()
+                    ->route('flash-sales.index')
+                    ->with('error', 'Batch ini sudah memiliki promo flash sale lain yang sedang aktif.');
+            }
+        }
+
         $flashSale->update(['is_active' => $newStatus]);
 
         $message = $newStatus

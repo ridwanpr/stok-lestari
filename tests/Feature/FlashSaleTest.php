@@ -265,6 +265,63 @@ test('validation rejects batch that is expired or not active', function () {
     Carbon::setTestNow();
 });
 
+test('validation rejects batch with zero stock', function () {
+    $seller = User::factory()->create();
+    $product = Product::factory()->create(['normal_price' => 30000]);
+    $batch = Batch::factory()->create([
+        'product_id' => $product->id,
+        'status' => 'active',
+        'stock' => 0,
+        'expiry_date' => now()->addDays(5),
+    ]);
+
+    $response = $this->actingAs($seller)->post(route('flash-sales.store'), [
+        'batch_id' => $batch->id,
+        'discount_price' => 15000,
+    ]);
+
+    $response->assertSessionHasErrors('batch_id');
+});
+
+test('toggle cannot reactivate flash sale if batch is expired, out of stock, or has duplicate active promo', function () {
+    $seller = User::factory()->create();
+    $product = Product::factory()->create();
+
+    // Expired batch
+    $expiredBatch = Batch::factory()->create([
+        'product_id' => $product->id,
+        'status' => 'active',
+        'stock' => 10,
+        'expiry_date' => now()->subDay(),
+    ]);
+    $flashSaleExpired = FlashSale::factory()->create([
+        'batch_id' => $expiredBatch->id,
+        'is_active' => false,
+    ]);
+
+    $this->actingAs($seller)->patch(route('flash-sales.toggle', $flashSaleExpired))
+        ->assertRedirect(route('flash-sales.index'))
+        ->assertSessionHas('error');
+    expect($flashSaleExpired->fresh()->is_active)->toBeFalse();
+
+    // Zero stock batch
+    $zeroStockBatch = Batch::factory()->create([
+        'product_id' => $product->id,
+        'status' => 'active',
+        'stock' => 0,
+        'expiry_date' => now()->addDays(3),
+    ]);
+    $flashSaleZeroStock = FlashSale::factory()->create([
+        'batch_id' => $zeroStockBatch->id,
+        'is_active' => false,
+    ]);
+
+    $this->actingAs($seller)->patch(route('flash-sales.toggle', $flashSaleZeroStock))
+        ->assertRedirect(route('flash-sales.index'))
+        ->assertSessionHas('error');
+    expect($flashSaleZeroStock->fresh()->is_active)->toBeFalse();
+});
+
 test('seller can toggle flash sale status', function () {
     $seller = User::factory()->create();
     $flashSale = FlashSale::factory()->create(['is_active' => true]);

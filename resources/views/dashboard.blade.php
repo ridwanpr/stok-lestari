@@ -105,13 +105,17 @@
                                             <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
                                                 Flash Sale Aktif
                                             </span>
-                                        @else
+                                        @elseif ($batch->stock > 0)
                                             <a
                                                 href="{{ route('flash-sales.index', ['batch_id' => $batch->id]) }}"
                                                 class="inline-flex items-center rounded-md bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100 border border-brand-200 transition-colors"
                                             >
                                                 + Flash Sale
                                             </a>
+                                        @else
+                                            <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-surface-base text-ink-muted border border-surface-border">
+                                                Stok Habis
+                                            </span>
                                         @endif
                                     </td>
                                 </tr>
@@ -152,13 +156,17 @@
                                     <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-brand-50 text-brand-700 border border-brand-200">
                                         Flash Sale Aktif
                                     </span>
-                                @else
+                                @elseif ($batch->stock > 0)
                                     <a
                                         href="{{ route('flash-sales.index', ['batch_id' => $batch->id]) }}"
                                         class="inline-flex items-center rounded-md bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100 border border-brand-200 transition-colors"
                                     >
                                         + Flash Sale
                                     </a>
+                                @else
+                                    <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-surface-base text-ink-muted border border-surface-border">
+                                        Stok Habis
+                                    </span>
                                 @endif
                             </div>
                         </div>
