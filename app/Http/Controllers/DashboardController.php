@@ -14,7 +14,7 @@ class DashboardController extends Controller
         $totalProducts = Product::query()->count();
         $totalStock = (int) Batch::query()->active()->sum('stock');
         $expiringBatchesCount = Batch::query()->expiringSoon(7)->count();
-        $activeFlashSalesCount = FlashSale::query()->active()->count();
+        $activeFlashSalesCount = FlashSale::query()->active()->whereHas('batch', fn ($q) => $q->active())->count();
 
         $expiringBatches = Batch::query()
             ->with(['product', 'flashSales' => fn ($q) => $q->active()])

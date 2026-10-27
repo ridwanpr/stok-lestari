@@ -42,7 +42,8 @@ class Batch extends Model
      */
     public function scopeActive(Builder $query): void
     {
-        $query->where('status', 'active');
+        $query->where('status', 'active')
+            ->whereDate('expiry_date', '>=', now()->toDateString());
     }
 
     /**

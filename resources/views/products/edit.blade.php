@@ -217,8 +217,10 @@
                         <tbody class="divide-y divide-surface-border-subtle bg-surface-panel text-sm text-ink-primary">
                             @foreach ($batches as $batch)
                                 @php
-                                    $isExpiringSoon = $batch->status === 'active'
-                                        && $batch->expiry_date->toDateString() >= now()->toDateString()
+                                    $isExpired = $batch->status === 'expired'
+                                        || $batch->expiry_date->toDateString() < now()->toDateString();
+                                    $isExpiringSoon = ! $isExpired
+                                        && $batch->status === 'active'
                                         && $batch->expiry_date->toDateString() <= now()->addDays(7)->toDateString();
                                 @endphp
                                 <tr class="hover:bg-surface-base/50 transition-colors">
@@ -230,7 +232,11 @@
                                     </td>
                                     <td class="px-5 py-3.5">
                                         <div class="flex flex-wrap items-center gap-1.5">
-                                            @if ($batch->status === 'active')
+                                            @if ($isExpired)
+                                                <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold bg-danger-50 text-danger-700 border border-danger-100">
+                                                    Kedaluwarsa
+                                                </span>
+                                            @elseif ($batch->status === 'active')
                                                 @if ($isExpiringSoon)
                                                     <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold bg-warning-50 text-warning-800 border border-warning-100">
                                                         Aktif
@@ -240,10 +246,6 @@
                                                         Aktif
                                                     </span>
                                                 @endif
-                                            @elseif ($batch->status === 'expired')
-                                                <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold bg-danger-50 text-danger-700 border border-danger-100">
-                                                    Kedaluwarsa
-                                                </span>
                                             @elseif ($batch->status === 'sold_out')
                                                 <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-surface-border-subtle text-ink-secondary border border-surface-border">
                                                     Habis Terjual
@@ -287,8 +289,10 @@
                 <div class="divide-y divide-surface-border-subtle md:hidden">
                     @foreach ($batches as $batch)
                         @php
-                            $isExpiringSoon = $batch->status === 'active'
-                                && $batch->expiry_date->toDateString() >= now()->toDateString()
+                            $isExpired = $batch->status === 'expired'
+                                || $batch->expiry_date->toDateString() < now()->toDateString();
+                            $isExpiringSoon = ! $isExpired
+                                && $batch->status === 'active'
                                 && $batch->expiry_date->toDateString() <= now()->addDays(7)->toDateString();
                         @endphp
                         <div class="p-4 space-y-2.5">
@@ -307,7 +311,11 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-col items-end gap-1">
-                                    @if ($batch->status === 'active')
+                                    @if ($isExpired)
+                                        <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold bg-danger-50 text-danger-700 border border-danger-100">
+                                            Kedaluwarsa
+                                        </span>
+                                    @elseif ($batch->status === 'active')
                                         @if ($isExpiringSoon)
                                             <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold bg-warning-50 text-warning-800 border border-warning-100">
                                                 Aktif
@@ -317,10 +325,6 @@
                                                 Aktif
                                             </span>
                                         @endif
-                                    @elseif ($batch->status === 'expired')
-                                        <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold bg-danger-50 text-danger-700 border border-danger-100">
-                                            Kedaluwarsa
-                                        </span>
                                     @elseif ($batch->status === 'sold_out')
                                         <span class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-surface-border-subtle text-ink-secondary border border-surface-border">
                                             Habis Terjual
