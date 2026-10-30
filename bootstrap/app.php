@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->validateCsrfTokens(except: [
+            'cron/*',
+        ]);
+
         // Behind a tunnel (cloudflared/ngrok) the local server sees HTTP while the
         // browser uses HTTPS; trusting the proxy headers keeps generated asset URLs
         // on https:// and avoids mixed-content blocking.
@@ -21,6 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+            fn (Request $request) => $request->is('api/*') || $request->is('cron/*') || $request->expectsJson(),
         );
     })->create();

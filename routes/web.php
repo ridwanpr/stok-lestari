@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BatchController;
+use App\Http\Controllers\Cron\ExpireBatchesWebhookController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FlashSaleController;
 use App\Http\Controllers\HomeController;
@@ -9,6 +10,10 @@ use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
+
+Route::match(['get', 'post'], '/cron/expire-batches', ExpireBatchesWebhookController::class)
+    ->middleware('throttle:10,1')
+    ->name('cron.expire-batches');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'create'])->name('login');
